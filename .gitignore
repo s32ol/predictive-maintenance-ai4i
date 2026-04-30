@@ -1,0 +1,35 @@
+# Data files — not committed
+data/*.csv
+data/*.parquet
+data/*.zip
+data/*.tsv
+
+# Reports/build artifacts
+reports/project_portfolio.docx
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.jupyter/

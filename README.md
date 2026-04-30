@@ -1,0 +1,70 @@
+# Predictive Maintenance — AI4I 2020
+
+Multi-fault classification on industrial CNC milling telemetry. Predicts machine failure from sensor readings while remaining honest about a 22:1 class imbalance.
+
+## Status
+
+**Phase 1 (EDA) — complete.** Phases 2–4 in progress.
+
+## Problem
+
+Industrial equipment fails for many distinct reasons — overheating, overstrain, power excursions, tool wear, and noise. Each failure mode has a different sensor signature and a different operational cost. The task is to distinguish a healthy run from a failing one in time to act, while remaining honest about the imbalance: roughly 3–4% of runs end in failure. A model that predicts "no failure" for every row is 96% accurate and zero percent useful.
+
+## Dataset
+
+[AI4I 2020 Predictive Maintenance Dataset](https://www.kaggle.com/datasets/stephanmatzka/predictive-maintenance-dataset-ai4i-2020) (Matzka, 2020). 10,000 observations, five sensor channels (air temperature, process temperature, rotational speed, torque, tool wear), categorical product type (L/M/H), and five labeled failure modes (TWF, HDF, PWF, OSF, RNF) that roll up into a binary `Machine failure` flag.
+
+Download `ai4i2020.csv` from the Kaggle link above and place it at `data/ai4i2020.csv`. The dataset is not committed to this repo (see `.gitignore`).
+
+## Phase 1 findings
+
+- **Class imbalance**: ~22:1 negative-to-positive. Drives metric and split strategy.
+- **Multicollinearity**: process temp ↔ air temp (r ≈ 0.96), torque ↔ rpm (r ≈ −0.88). By design — reflects real physics.
+- **Failure rate by type**: L 5.7% / M 3.0% / H 2.5%. Type carries signal.
+- **Schema clean**: no nulls, no duplicate IDs.
+- **Label consistency**: `Machine failure = OR(TWF, HDF, PWF, OSF, RNF)`. The five mode flags are *components of the label* — they must be dropped from the feature set to prevent leakage.
+
+See `notebooks/01_eda.ipynb` for the full walkthrough and figures.
+
+## Repo structure
+
+```
+predictive-maintenance-ai4i/
+├── data/                       # gitignored — drop ai4i2020.csv here
+├── notebooks/
+│   ├── 01_eda.ipynb            # Phase 1 EDA (executed, renders on GitHub)
+│   └── 01_eda.py               # Same notebook in jupytext .py format
+├── reports/figures/            # Generated EDA figures
+├── src/
+│   ├── data.py                 # Schema-validating loader
+│   └── generate_synthetic.py   # Dev fallback (spec-faithful AI4I generator)
+├── requirements.txt
+└── README.md
+```
+
+## Setup
+
+```bash
+# clone
+git clone https://github.com/s32ol/predictive-maintenance-ai4i.git
+cd predictive-maintenance-ai4i
+
+# install
+pip install -r requirements.txt
+
+# get the data (manual: download from the Kaggle link in the Dataset section)
+# place it at data/ai4i2020.csv
+
+# run the EDA notebook
+jupyter lab notebooks/01_eda.ipynb
+```
+
+## Roadmap
+
+- **Phase 2** — Feature engineering (`temp_diff`, `power`, `wear_torque`), Type encoding, stratified split.
+- **Phase 3** — Logistic-regression baseline; XGBoost classifier with `scale_pos_weight`. Evaluation on F1, recall, PR-AUC, confusion matrix.
+- **Phase 4** — Feature importance plot, production framing (drift detection, calibration, tiered output, cost-weighted thresholds), notes on extending to a real-world fleet.
+
+## Stack
+
+Python · pandas · scikit-learn · XGBoost · matplotlib · seaborn · Jupyter
