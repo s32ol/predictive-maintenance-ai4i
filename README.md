@@ -1,6 +1,6 @@
 # Predictive Maintenance — AI4I 2020
 
-Multi-fault classification on industrial CNC milling telemetry. Predicts machine failure from sensor readings while remaining honest about a 22:1 class imbalance.
+Multi-fault classification on industrial CNC milling telemetry. Predicts machine failure from sensor readings while remaining honest about a 28:1 class imbalance.
 
 ## Status
 
@@ -18,9 +18,9 @@ Download `ai4i2020.csv` from the Kaggle link above and place it at `data/ai4i202
 
 ## Phase 1 findings
 
-- **Class imbalance**: ~22:1 negative-to-positive. Drives metric and split strategy.
-- **Multicollinearity**: process temp ↔ air temp (r ≈ 0.96), torque ↔ rpm (r ≈ −0.88). By design — reflects real physics.
-- **Failure rate by type**: L 5.7% / M 3.0% / H 2.5%. Type carries signal.
+- **Class imbalance**: ~28:1 negative-to-positive (3.4% failure rate). Drives metric and split strategy.
+- **Multicollinearity**: process temp ↔ air temp (r ≈ 0.88), torque ↔ rpm (r ≈ −0.88). By design — reflects real physics.
+- **Failure rate by type**: L 3.9% / M 2.8% / H 2.1%. Type carries signal.
 - **Schema clean**: no nulls, no duplicate IDs.
 - **Label consistency**: `Machine failure = OR(TWF, HDF, PWF, OSF, RNF)`. The five mode flags are *components of the label* — they must be dropped from the feature set to prevent leakage.
 
