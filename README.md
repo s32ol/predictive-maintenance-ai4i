@@ -1,3 +1,5 @@
+This project builds a binary classifier for predictive maintenance on the AI4I 2020 dataset (10,000 rows of synthetic CNC milling telemetry, 28:1 class imbalance). Two physics-aligned features temp_diff, power_proxy) are engineered from EDA-surfaced multicollinearities, and an XGBoost model is benchmarked against a logistic regression baseline using stratified 5-fold CV. Final test PR-AUC is **0.865** (ROC-AUC 0.972) at a cost-tuned threshold τ=0.31, catching 56 of 68 failures (82% recall) at a 1.7% false-alarm rate. Every modeling decision traces back to a documented EDA finding; the 10:1 cost ratio and hyperparameters are flagged as production-calibratable assumptions.
+
 # Predictive Maintenance — AI4I 2020
 
 Multi-fault classification on industrial CNC milling telemetry. Predicts machine failure from sensor readings while remaining honest about a 28:1 class imbalance.
