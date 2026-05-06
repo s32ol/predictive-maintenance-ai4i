@@ -1,4 +1,4 @@
-This project builds a binary classifier for predictive maintenance on the AI4I 2020 dataset (10,000 rows of synthetic CNC milling telemetry, 28:1 class imbalance). Two physics-aligned features temp_diff, power_proxy) are engineered from EDA-surfaced multicollinearities, and an XGBoost model is benchmarked against a logistic regression baseline using stratified 5-fold CV. Final test PR-AUC is **0.865** (ROC-AUC 0.972) at a cost-tuned threshold τ=0.31, catching 56 of 68 failures (82% recall) at a 1.7% false-alarm rate. Every modeling decision traces back to a documented EDA finding; the 10:1 cost ratio and hyperparameters are flagged as production-calibratable assumptions.
+This project builds a binary classifier for predictive maintenance on the AI4I 2020 dataset (10,000 rows of synthetic CNC milling telemetry, 28:1 class imbalance). Two physics-aligned features (temp_diff, power_proxy) are engineered from EDA-surfaced multicollinearities, and an XGBoost model is benchmarked against a logistic regression baseline using stratified 5-fold CV. Final test PR-AUC is **0.865** (ROC-AUC 0.972) at a cost-tuned threshold τ=0.31, catching 56 of 68 failures (82% recall) at a 1.7% false-alarm rate. Every modeling decision traces back to a documented EDA finding; the 10:1 cost ratio and hyperparameters are flagged as production-calibratable assumptions.
 
 # Predictive Maintenance — AI4I 2020
 
@@ -6,7 +6,19 @@ Multi-fault classification on industrial CNC milling telemetry. Predicts machine
 
 ## Status
 
-**Phase 1 (EDA) — complete.** Phases 2–4 in progress.
+**Phases 1–3 complete.** Phase 4 (production framing & write-up) in progress.
+
+## Headline results (Phase 3)
+
+| Metric | XGBoost | Logistic Regression |
+|---|---|---|
+| Test PR-AUC | **0.865** | 0.51 |
+| Test ROC-AUC | 0.972 | — |
+| Recall @ τ=0.31 | 82% (56 / 68) | — |
+| False-alarm rate | 1.7% | — |
+
+XGBoost outperforms the LR baseline by **~1.7×** on PR-AUC. See `notebooks/02_modeling.ipynb` for the full walkthrough, the DS Deep Dive on why XGBoost wins, and the Phase 3 closeout.
+
 
 ## Problem
 
@@ -35,7 +47,8 @@ predictive-maintenance-ai4i/
 ├── data/                       # gitignored — drop ai4i2020.csv here
 ├── notebooks/
 │   ├── 01_eda.ipynb            # Phase 1 EDA (executed, renders on GitHub)
-│   └── 01_eda.py               # Same notebook in jupytext .py format
+│   ├── 01_eda.py               # Same notebook in jupytext .py format
+│   └── 02_modeling.ipynb          # Phases 2–3 modeling (LR baseline + XGBoost, executed)
 ├── reports/figures/            # Generated EDA figures
 ├── src/
 │   ├── data.py                 # Schema-validating loader
@@ -57,15 +70,17 @@ pip install -r requirements.txt
 # get the data (manual: download from the Kaggle link in the Dataset section)
 # place it at data/ai4i2020.csv
 
-# run the EDA notebook
-jupyter lab notebooks/01_eda.ipynb
+# run the notebooks
+jupyter lab notebooks/01_eda.ipynb       # Phase 1 — EDA
+jupyter lab notebooks/02_modeling.ipynb  # Phases 2–3 — modeling
 ```
 
 ## Roadmap
 
-- **Phase 2** — Feature engineering (`temp_diff`, `power`, `wear_torque`), Type encoding, stratified split.
-- **Phase 3** — Logistic-regression baseline; XGBoost classifier with `scale_pos_weight`. Evaluation on F1, recall, PR-AUC, confusion matrix.
-- **Phase 4** — Feature importance plot, production framing (drift detection, calibration, tiered output, cost-weighted thresholds), notes on extending to a real-world fleet.
+- **Phase 1** ✓ — EDA: distributions, correlations, failure-mode breakdown, leakage check.
+- **Phase 2** ✓ — Feature engineering (`temp_diff`, `power_proxy`), Type encoding, stratified split.
+- **Phase 3** ✓ — Logistic-regression baseline; XGBoost classifier with `scale_pos_weight`. Evaluation on PR-AUC, ROC-AUC, recall, confusion matrix; cost-tuned threshold τ=0.31.
+- **Phase 4** — Production framing (drift detection, calibration, tiered output, cost-weighted thresholds), write-up, notes on extending to a real-world fleet.
 
 ## Stack
 
